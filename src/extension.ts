@@ -22,9 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
       try {
+        const config = vscode.workspace.getConfiguration("json-to-pydantic");
+
+        const className = config.get<string>("defaultRootClassName");
+
         const options = editor.options;
 
-        const code = generatePydanticCode(json, "Model", {
+        const code = generatePydanticCode(json, className, {
           indentation: Number(options.tabSize),
           useTabs: !options.insertSpaces
         });
