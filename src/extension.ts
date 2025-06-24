@@ -5,18 +5,24 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     "json-to-pydantic.generatePydanticCode",
     async () => {
+      const editor = vscode.window.activeTextEditor;
+
+      if (!editor) {
+        return;
+      }
+
+      const clipboardContent = await vscode.env.clipboard.readText();
+
+      let json = "";
       try {
-        const editor = vscode.window.activeTextEditor;
-
-        if (!editor) {
-          return;
-        }
-
-        const clipboardContent = await vscode.env.clipboard.readText();
-
+        json = JSON.parse(clipboardContent);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(
+          `Error: Selected string is not a valid JSON`
+        );
+      }
+      try {
         const options = editor.options;
-
-        const json = JSON.parse(clipboardContent);
 
         const code = generatePydanticCode(json, "Model", {
           indentation: Number(options.tabSize),
