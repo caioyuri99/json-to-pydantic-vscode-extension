@@ -1,26 +1,43 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import { generatePydanticCode } from "json-to-pydantic-code-generator";
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const disposable = vscode.commands.registerCommand(
+    "json-to-pydantic.generatePydanticCode",
+    async () => {
+      try {
+        const editor = vscode.window.activeTextEditor;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "json-to-pydantic" is now active!');
+        if (!editor) {
+          return;
+        }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('json-to-pydantic.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from JSON to Pydantic!');
-	});
+        const clipboardContent = await vscode.env.clipboard.readText();
 
-	context.subscriptions.push(disposable);
+        const options = editor.options;
+
+        const json = JSON.parse(clipboardContent);
+
+        const code = generatePydanticCode(json, "Model", {
+          indentation: Number(options.tabSize),
+          useTabs: !options.insertSpaces
+        });
+
+        const cursorPosition = editor.selection.active;
+
+        await editor.edit((editBuilder) => {
+          editBuilder.insert(cursorPosition, code);
+        });
+      } catch (error: any) {
+        vscode.window.showErrorMessage(
+          `Error: ${error.message ?? String(error)}`
+        );
+      }
+    }
+  );
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
+
