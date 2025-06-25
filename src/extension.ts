@@ -1,4 +1,7 @@
-import { generatePydanticCode } from "json-to-pydantic-code-generator";
+import {
+  generatePydanticCode,
+  InvalidJSONString
+} from "json-to-pydantic-code-generator";
 import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -13,24 +16,18 @@ export function activate(context: vscode.ExtensionContext) {
 
       const clipboardContent = await vscode.env.clipboard.readText();
 
-      let json = "";
-      try {
-        json = JSON.parse(clipboardContent);
-      } catch (error: any) {
-        vscode.window.showErrorMessage(
-          `Error: Selected string is not a valid JSON`
-        );
-      }
       try {
         const config = vscode.workspace.getConfiguration("json-to-pydantic");
 
         const className = config.get<string>("defaultRootClassName");
+        const preferClassReuse = config.get<boolean>("preferClassReuse");
 
         const options = editor.options;
 
-        const code = generatePydanticCode(json, className, {
+        const code = generatePydanticCode(clipboardContent, className, {
           indentation: Number(options.tabSize),
-          useTabs: !options.insertSpaces
+          useTabs: !options.insertSpaces,
+          preferClassReuse: preferClassReuse
         });
 
         const cursorPosition = editor.selection.active;

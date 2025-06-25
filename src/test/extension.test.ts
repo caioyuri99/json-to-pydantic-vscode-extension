@@ -183,5 +183,35 @@ suite("Extension Test Suite", () => {
 
     await testWithTemporaryConfig(configs, () => genericTest(input, expected));
   });
+
+  test('Should apply configured "preferClassReuse" flag', async () => {
+    const input = dedent`
+      {
+        "user1": { "name": "Alice" },
+        "user2": { "name": "Bob" } 
+      }
+    `;
+
+    const expected = dedent`
+      from __future__ import annotations
+
+      from pydantic import BaseModel
+
+
+      class User1(BaseModel):
+          name: str
+
+
+      class Model(BaseModel):
+          user1: User1
+          user2: User1
+    `;
+
+    const configs = {
+      preferClassReuse: true
+    };
+
+    await testWithTemporaryConfig(configs, () => genericTest(input, expected));
+  });
 });
 

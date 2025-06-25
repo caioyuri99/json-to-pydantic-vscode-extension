@@ -24,7 +24,12 @@
         "json-to-pydantic.defaultRootClassName": {
           "type": "string",
           "default": "Model",
-          "description": "Sets the default name of the root class"
+          "description": "Defines the default name of the root class"
+        },
+        "json-to-pydantic.preferClassReuse": {
+          "type": "boolean",
+          "default": false,
+          "description": "Defines if identical class definitions will be reused."
         }
       }
     }
