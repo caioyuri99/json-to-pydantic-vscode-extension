@@ -213,5 +213,77 @@ suite("Extension Test Suite", () => {
 
     await testWithTemporaryConfig(configs, () => genericTest(input, expected));
   });
+
+  test('Should apply configured "forceOptional" config ("OnlyRootClass" test)', async () => {
+    const input = dedent`
+      {
+        "name": "Alice",
+        "address": {
+          "street": "Main St",
+          "zip": "12345"
+        }
+      }
+    `;
+
+    const expected = dedent`
+      from __future__ import annotations
+
+      from typing import Optional
+
+      from pydantic import BaseModel
+
+
+      class Address(BaseModel):
+          street: str
+          zip: str
+
+
+      class Model(BaseModel):
+          name: Optional[str] = None
+          address: Optional[Address] = None
+    `;
+
+    const configs = {
+      forceOptional: "OnlyRootClass"
+    };
+
+    await testWithTemporaryConfig(configs, () => genericTest(input, expected));
+  });
+
+  test('Should apply configured "forceOptional" config ("AllClasses" test)', async () => {
+    const input = dedent`
+      {
+        "name": "Alice",
+        "address": {
+          "street": "Main St",
+          "zip": "12345"
+        }
+      }
+    `;
+
+    const expected = dedent`
+      from __future__ import annotations
+
+      from typing import Optional
+
+      from pydantic import BaseModel
+
+
+      class Address(BaseModel):
+          street: Optional[str] = None
+          zip: Optional[str] = None
+
+
+      class Model(BaseModel):
+          name: Optional[str] = None
+          address: Optional[Address] = None
+    `;
+
+    const configs = {
+      forceOptional: "AllClasses"
+    };
+
+    await testWithTemporaryConfig(configs, () => genericTest(input, expected));
+  });
 });
 

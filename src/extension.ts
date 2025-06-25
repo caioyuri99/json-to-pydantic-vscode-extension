@@ -22,12 +22,17 @@ export function activate(context: vscode.ExtensionContext) {
         const className = config.get<string>("defaultRootClassName");
         const preferClassReuse = config.get<boolean>("preferClassReuse");
 
+        type ForceOptional = "None" | "OnlyRootClass" | "AllClasses";
+
+        const forceOptional = config.get<ForceOptional>("forceOptional");
+
         const options = editor.options;
 
         const code = generatePydanticCode(clipboardContent, className, {
           indentation: Number(options.tabSize),
           useTabs: !options.insertSpaces,
-          preferClassReuse: preferClassReuse
+          preferClassReuse,
+          forceOptional
         });
 
         const cursorPosition = editor.selection.active;

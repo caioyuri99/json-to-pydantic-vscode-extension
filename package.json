@@ -30,6 +30,21 @@
           "type": "boolean",
           "default": false,
           "description": "Defines if identical class definitions will be reused."
+        },
+        "json-to-pydantic.forceOptional": {
+          "type": "string",
+          "default": "None",
+          "enum": [
+            "None",
+            "OnlyRootClass",
+            "AllClasses"
+          ],
+          "enumDescriptions": [
+            "No class will have its fields specified as `Optional`",
+            "Only the root class will have its fields specified as `Optional`",
+            "All classes will have their fields specified as `Optional`"
+          ],
+          "description": "Defines which classes will have their fields specified as `Optional`"
         }
       }
     }
