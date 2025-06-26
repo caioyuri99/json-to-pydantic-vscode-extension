@@ -1,12 +1,21 @@
-# json-to-pydantic README
+# JSON to Pydantic
 
-This is the README for your extension "json-to-pydantic". After writing up a brief description, we recommend including the following sections.
+Generate Pydantic models from JSON data. Inspired by [JSON to TS](https://marketplace.visualstudio.com/items?itemName=MariusAlchimavicius.json-to-ts) extension and [JSON to Pydantic](https://jsontopydantic.com/) website.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Converts JSON data to Pydantic model classes
+- Handles nested objects and arrays
+- Supports Python type annotations
+- Supports aliasing for camelCase fields
+- Option to reuse class definitions
+- Option to make fields optional
+- Supports avoiding reserving Python keywords as field names
+- Duplicate class name and field name prevention
+- Union types and array types merging
+- Indents the generated code according to the editor settings
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
 \!\[feature X\]\(images/feature-x.png\)
 
