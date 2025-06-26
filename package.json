@@ -14,8 +14,24 @@
   "contributes": {
     "commands": [
       {
-        "command": "json-to-pydantic.generatePydanticCode",
-        "title": "Generate Pydantic Code"
+        "command": "json-to-pydantic.generateFromClipboard",
+        "title": "Generate Pydantic code from clipboard."
+      },
+      {
+        "command": "json-to-pydantic.generateFromSelection",
+        "title": "Generate Pydantic code from selection."
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "json-to-pydantic.generateFromClipboard",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v"
+      },
+      {
+        "command": "json-to-pydantic.generateFromSelection",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s"
       }
     ],
     "configuration": {
@@ -45,6 +61,11 @@
             "All classes will have their fields specified as `Optional`"
           ],
           "description": "Defines which classes will have their fields specified as `Optional`"
+        },
+        "json-to-pydantic.aliasCamelCase": {
+          "type": "boolean",
+          "default": false,
+          "description": "Defines if will alias `camelCase` fields as `snake_case`."
         }
       }
     }
