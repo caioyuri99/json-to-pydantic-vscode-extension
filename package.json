@@ -3,6 +3,7 @@
   "displayName": "JSON to Pydantic",
   "description": "Generate Pydantic models automatically from JSON data.",
   "version": "0.0.1",
+  "icon": "resources/icon.svg",
   "engines": {
     "vscode": "^1.101.0"
   },
