@@ -17,64 +17,369 @@ Generate Pydantic models from JSON data. Inspired by [JSON to TS](https://market
 
 ## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+- **Generate Code from Clipboard** (`Ctrl + Alt + V`)
+![Generate Code from Clipboard](assets/animations/clipboard.gif)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **Generate Code from Selection** (`Ctrl + Alt + S`)
+![Generate Code from Selection](assets/animations/selection.gif)
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+This extension provides settings to modify the generated code. They are:
 
-For example:
+| Setting | Description | Type | Default Value |
+| ------- | ----------- | ---- | ------------- |
+| [`json-to-pydantic.defaultRootClassName`](#json-to-pydanticdefaultrootclassname) | Defines the default name of the generated root class | `string`  | `"Model"` |
+| [`json-to-pydantic.preferClassReuse`](#json-to-pydanticpreferclassreuse) | Defines whether identical class definitions will be reused from generated classes | `boolean` | `false` |
+| [`json-to-pydantic.forceOptional`](#json-to-pydanticforceoptional) | Defines which classes will have their fields defined as Optional | `"None"` \| `"OnlyRootClass"` \| `"AllClasses"` | `"None"` |
+| [`json-to-pydantic.aliasCamelCase`](#json-to-pydanticaliascamelcase) | Defines whether `camelCase` fields will be aliased to `snake_case` fields | `boolean` | `false` |
 
-This extension contributes the following settings:
+## Extension Settings Examples
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+The following JSON will be the input for all the examples that follow.
 
-## Known Issues
+```json
+{
+  "id": 101,
+  "title": "First Post",
+  "content": "This is the content of the post.",
+  "isActive": true,
+  "createdAt": "2025-07-01T14:20:00Z",
+  "updatedAt": "2025-07-01T15:00:00Z",
+  "userProfile": {
+    "userId": 501,
+    "firstName": "Alice",
+    "lastName": "Johnson",
+    "emailAddress": "alice@example.com"
+  },
+  "createdBy": {
+    "userId": 501,
+    "firstName": "Alice",
+    "lastName": "Johnson",
+    "emailAddress": "alice@example.com"
+  },
+  "updatedBy": {
+    "userId": 502,
+    "firstName": "Bob",
+    "lastName": "Smith",
+    "emailAddress": "bob@example.com"
+  },
+  "tags": ["json", "example", "camelCase"],
+  "metadata": {
+    "viewsCount": 250,
+    "likesCount": 18,
+    "isFeatured": false
+  }
+}
+```
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+With all default settings, the resulting code will be as follows:
+
+```python
+from __future__ import annotations
+
+from typing import List
+
+from pydantic import BaseModel
+
+
+class UserProfile(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class CreatedBy(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class UpdatedBy(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class Metadata(BaseModel):
+    viewsCount: int
+    likesCount: int
+    isFeatured: bool
+
+
+class Model(BaseModel):
+    id: int
+    title: str
+    content: str
+    isActive: bool
+    createdAt: str
+    updatedAt: str
+    userProfile: UserProfile
+    createdBy: CreatedBy
+    updatedBy: UpdatedBy
+    tags: List[str]
+    metadata: Metadata
+```
+
+### `json-to-pydantic.defaultRootClassName`
+It can be defined with any name, including names that are not allowed for other classes generated from the input (such as `True`, `False` or names starting with numbers), and it is the user's responsibility to avoid this. For example purposes, the defined name will be `"Root"`. If defined this way, the resulting code will be as follows:
+```python
+from __future__ import annotations
+
+from typing import List
+
+from pydantic import BaseModel
+
+
+class UserProfile(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class CreatedBy(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class UpdatedBy(BaseModel):
+    userId: int
+    firstName: str
+    lastName: str
+    emailAddress: str
+
+
+class Metadata(BaseModel):
+    viewsCount: int
+    likesCount: int
+    isFeatured: bool
+
+
+class Root(BaseModel):
+    id: int
+    title: str
+    content: str
+    isActive: bool
+    createdAt: str
+    updatedAt: str
+    userProfile: UserProfile
+    createdBy: CreatedBy
+    updatedBy: UpdatedBy
+    tags: List[str]
+    metadata: Metadata
+```
+
+### `json-to-pydantic.preferClassReuse`
+
+If set to `true`, the resulting code will be as follows:
+
+```python
+from __future__ import annotations
+
+from typing import List
+
+from pydantic import BaseModel
+
+
+class UserProfile(BaseModel):
+userId: int
+firstName: str
+lastName: str
+emailAddress: str
+
+
+class Metadata(BaseModel):
+viewsCount: int
+likesCount: int
+isFeatured: bool
+
+
+class Model(BaseModel):
+id: int
+title: str
+content: str
+isActive: bool
+createdAt: str
+updatedAt: str
+userProfile: UserProfile
+createdBy: UserProfile
+updatedBy: UserProfile
+tags: List[str]
+metadata: Metadata
+```
+
+### `json-to-pydantic.forceOptional`
+
+There are three options to this setting: `"None"`, `"OnlyRootClass"` and `"AllClasses"`. `"None"` is the default option, so if set to this option, the resulting code will be like the default example code shown above. Following is the resulting code for the other options:
+
+- `"OnlyRootClass"`: `Optional[...]` will only be set to the root class.
+
+    ```python
+    from __future__ import annotations
+
+    from typing import List, Optional
+
+    from pydantic import BaseModel
+
+
+    class UserProfile(BaseModel):
+        userId: int
+        firstName: str
+        lastName: str
+        emailAddress: str
+
+
+    class CreatedBy(BaseModel):
+        userId: int
+        firstName: str
+        lastName: str
+        emailAddress: str
+
+
+    class UpdatedBy(BaseModel):
+        userId: int
+        firstName: str
+        lastName: str
+        emailAddress: str
+
+
+    class Metadata(BaseModel):
+        viewsCount: int
+        likesCount: int
+        isFeatured: bool
+
+
+    class Model(BaseModel):
+        id: Optional[int] = None
+        title: Optional[str] = None
+        content: Optional[str] = None
+        isActive: Optional[bool] = None
+        createdAt: Optional[str] = None
+        updatedAt: Optional[str] = None
+        userProfile: Optional[UserProfile] = None
+        createdBy: Optional[CreatedBy] = None
+        updatedBy: Optional[UpdatedBy] = None
+        tags: Optional[List[str]] = None
+        metadata: Optional[Metadata] = None
+    ```
+- `"AllClasses"`: `Optional[...]` will be set to all generated classes.
+    ```python
+    from __future__ import annotations
+
+    from typing import List, Optional
+
+    from pydantic import BaseModel
+
+
+    class UserProfile(BaseModel):
+    userId: Optional[int] = None
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    emailAddress: Optional[str] = None
+
+
+    class CreatedBy(BaseModel):
+    userId: Optional[int] = None
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    emailAddress: Optional[str] = None
+
+
+    class UpdatedBy(BaseModel):
+    userId: Optional[int] = None
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    emailAddress: Optional[str] = None
+
+
+    class Metadata(BaseModel):
+    viewsCount: Optional[int] = None
+    likesCount: Optional[int] = None
+    isFeatured: Optional[bool] = None
+
+
+    class Model(BaseModel):
+    id: Optional[int] = None
+    title: Optional[str] = None
+    content: Optional[str] = None
+    isActive: Optional[bool] = None
+    createdAt: Optional[str] = None
+    updatedAt: Optional[str] = None
+    userProfile: Optional[UserProfile] = None
+    createdBy: Optional[CreatedBy] = None
+    updatedBy: Optional[UpdatedBy] = None
+    tags: Optional[List[str]] = None
+    metadata: Optional[Metadata] = None
+    ```
+
+### `json-to-pydantic.aliasCamelCase`
+
+If set by `true`, `camelCase` fields will be aliased to `snake_case` fields.
+
+```python
+from __future__ import annotations
+
+from typing import List
+
+from pydantic import BaseModel, Field
+
+
+class UserProfile(BaseModel):
+user_id: int = Field(..., alias='userId')
+first_name: str = Field(..., alias='firstName')
+last_name: str = Field(..., alias='lastName')
+email_address: str = Field(..., alias='emailAddress')
+
+
+class CreatedBy(BaseModel):
+user_id: int = Field(..., alias='userId')
+first_name: str = Field(..., alias='firstName')
+last_name: str = Field(..., alias='lastName')
+email_address: str = Field(..., alias='emailAddress')
+
+
+class UpdatedBy(BaseModel):
+user_id: int = Field(..., alias='userId')
+first_name: str = Field(..., alias='firstName')
+last_name: str = Field(..., alias='lastName')
+email_address: str = Field(..., alias='emailAddress')
+
+
+class Metadata(BaseModel):
+views_count: int = Field(..., alias='viewsCount')
+likes_count: int = Field(..., alias='likesCount')
+is_featured: bool = Field(..., alias='isFeatured')
+
+
+class Model(BaseModel):
+id: int
+title: str
+content: str
+is_active: bool = Field(..., alias='isActive')
+created_at: str = Field(..., alias='createdAt')
+updated_at: str = Field(..., alias='updatedAt')
+user_profile: UserProfile = Field(..., alias='userProfile')
+created_by: CreatedBy = Field(..., alias='createdBy')
+updated_by: UpdatedBy = Field(..., alias='updatedBy')
+tags: List[str]
+metadata: Metadata
+```
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release of JSON to Pydantic extension.
 
-Initial release of ...
+## More Information
 
-### 1.0.1
+- [Repo](https://github.com/caioyuri99/json-to-pydantic-code-generator)
+- [Issues](https://github.com/caioyuri99/json-to-pydantic-code-generator/issues)
+- [Change log](https://github.com/caioyuri99/json-to-pydantic-vscode-extension/blob/main/CHANGELOG.md)
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
