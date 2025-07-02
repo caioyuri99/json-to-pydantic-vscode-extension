@@ -1,9 +1,10 @@
 {
   "name": "json-to-pydantic",
   "displayName": "JSON to Pydantic",
+  "publisher": "CaioYuri",
   "description": "Generate Pydantic models automatically from JSON data.",
   "version": "0.0.1",
-  "icon": "assets/icons/icon.svg",
+  "icon": "assets/icons/icon.png",
   "engines": {
     "vscode": "^1.101.0"
   },
@@ -96,4 +97,3 @@
     "json-to-pydantic-code-generator": "^1.0.3"
   }
 }
-
