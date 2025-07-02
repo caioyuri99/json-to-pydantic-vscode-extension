@@ -371,12 +371,6 @@ tags: List[str]
 metadata: Metadata
 ```
 
-## Release Notes
-
-### 0.0.1
-
-Initial release of JSON to Pydantic extension.
-
 ## More Information
 
 - [Repo](https://github.com/caioyuri99/json-to-pydantic-code-generator)
