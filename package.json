@@ -3,6 +3,10 @@
   "displayName": "JSON to Pydantic",
   "publisher": "CaioYuri",
   "description": "Generate Pydantic models automatically from JSON data.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caioyuri99/json-to-pydantic-vscode-extension.git"
+  },
   "version": "0.0.1",
   "icon": "assets/icons/icon.png",
   "engines": {
