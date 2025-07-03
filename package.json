@@ -8,7 +8,7 @@
     "url": "https://github.com/caioyuri99/json-to-pydantic-vscode-extension.git"
   },
   "license": "MIT",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "icon": "assets/icons/icon.png",
   "engines": {
     "vscode": "^1.101.0"
